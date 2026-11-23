@@ -1,0 +1,6 @@
+{
+  "name": "Selamat Datang",
+  "description": "Aplikasi login sederhana, registrasi manual, dan halaman selamat datang dengan Firebase Auth dan Firestore.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

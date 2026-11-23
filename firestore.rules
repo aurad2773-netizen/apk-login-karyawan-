@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidUserProfile(data) {
+      return data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.fullName is string &&
+             data.fullName.size() >= 2 &&
+             data.fullName.size() <= 60 &&
+             data.username is string &&
+             data.username.size() >= 3 &&
+             data.username.size() <= 30 &&
+             data.username.matches('^[a-zA-Z0-9_.]+$') &&
+             data.email is string &&
+             data.email.size() <= 120 &&
+             data.registrationMethod is string &&
+             data.registrationMethod in ['manual', 'google_quick'] &&
+             (!('phone' in data) || (data.phone is string && data.phone.size() <= 20)) &&
+             (!('occupation' in data) || (data.occupation is string && data.occupation.size() <= 50)) &&
+             (!('bio' in data) || (data.bio is string && data.bio.size() <= 200));
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       incoming().keys().hasAll(['userId', 'fullName', 'username', 'email', 'registrationMethod', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['userId', 'fullName', 'username', 'email', 'phone', 'occupation', 'bio', 'registrationMethod', 'createdAt', 'updatedAt']) &&
+                       incoming().createdAt is timestamp &&
+                       incoming().createdAt <= request.time &&
+                       incoming().updatedAt is timestamp &&
+                       incoming().updatedAt <= request.time &&
+                       isValidUserProfile(incoming());
+
+      allow update: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidUserProfile(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().email == existing().email &&
+                       incoming().registrationMethod == existing().registrationMethod &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().updatedAt is timestamp &&
+                       incoming().updatedAt <= request.time &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['fullName', 'username', 'phone', 'occupation', 'bio', 'updatedAt']);
+
+      allow delete: if isOwner(userId) && isValidId(userId);
+    }
+  }
+}

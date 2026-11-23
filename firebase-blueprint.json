@@ -1,0 +1,71 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Registered user profile and manual registration details stored in Firestore.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated Firebase UID of the user."
+        },
+        "fullName": {
+          "type": "string",
+          "description": "User full name entered during manual registration (2-60 chars)."
+        },
+        "username": {
+          "type": "string",
+          "description": "Unique handle chosen by user (3-30 chars, alphanumeric, underscore, dot)."
+        },
+        "email": {
+          "type": "string",
+          "description": "Verified Google account email address."
+        },
+        "phone": {
+          "type": "string",
+          "description": "Optional phone or WhatsApp number (up to 20 chars)."
+        },
+        "occupation": {
+          "type": "string",
+          "description": "Optional role or occupation label (up to 50 chars)."
+        },
+        "bio": {
+          "type": "string",
+          "description": "Optional short welcome note or bio (up to 200 chars)."
+        },
+        "registrationMethod": {
+          "type": "string",
+          "enum": ["manual", "google_quick"],
+          "description": "Indicates whether user completed manual registration before or after sign-in."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp set via FieldValue.serverTimestamp() upon profile creation."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp set via FieldValue.serverTimestamp() upon create/update."
+        }
+      },
+      "required": [
+        "userId",
+        "fullName",
+        "username",
+        "email",
+        "registrationMethod",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
+      },
+      "description": "Per-user registration and welcome profile isolated to the owning Firebase Auth UID."
+    }
+  }
+}

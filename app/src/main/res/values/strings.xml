@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Selamat Datang</string>
+    <string name="welcome_hero_desc">Ilustrasi gerbang selamat datang dengan cahaya pagi</string>
+    <string name="tab_login">Masuk</string>
+    <string name="tab_register_manual">Daftar Manual</string>
+    <string name="btn_sign_in_google">Masuk dengan Google</string>
+    <string name="btn_register_and_verify">Daftar &amp; Verifikasi Google</string>
+    <string name="btn_save_registration">Simpan Registrasi</string>
+    <string name="btn_edit_profile">Edit Profil</string>
+    <string name="btn_save_changes">Simpan Perubahan</string>
+    <string name="btn_cancel">Batal</string>
+    <string name="btn_sign_out">Keluar</string>
+    <string name="btn_retry">Coba Lagi</string>
+</resources>
